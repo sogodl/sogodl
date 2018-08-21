@@ -10,8 +10,8 @@ class BotController extends Controller
 
     public function __construct()
     {
-        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('LINE_BOT_CHANNEL_ACCESS_TOKEN'));
-        $this->bot  = new \LINE\LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
+        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('6XWM1H47Fvjvw9nnwqGuLFXnIox2Ki5Oa7ZKPgagY/3Ue624DNx36ucyNXPUaQjbwoxZl5ut1+FHS5msnqqd4gEq/iwNZu5p0JTvwDGq0M97/YAcn495WzQCs8y5hYnVToMdVaPkouoCpNXRIxLZbgdB04t89/1O/w1cDnyilFU=');
+        $this->bot  = new \LINE\LINEBot($httpClient, ['channelSecret' => '1b938ca560bc6dd17524c8b9ac4b63dc']);
     }
 
     public function index()
