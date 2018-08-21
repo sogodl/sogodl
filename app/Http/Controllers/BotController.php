@@ -3,19 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use LINE\LINEBot\EchoBot\Dependency;
-use LINE\LINEBot\EchoBot\Route;
-use LINE\LINEBot\EchoBot\Setting;
 
 class BotController extends Controller
 {
-    public function Index()
+    private $bot;
+
+    public function __construct()
     {
-        return 'bot start';
-//        $setting = Setting::getSetting();
-//        $app = new Slim\App($setting);
-//        (new Dependency())->register($app);
-//        (new Route())->register($app);
-//        $app->run();
+        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('LINE_BOT_CHANNEL_ACCESS_TOKEN'));
+        $this->bot  = new \LINE\LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
+    }
+
+    public function index()
+    {
+        $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('hello');
+        $response           = $this->bot->replyMessage('<reply token>', $textMessageBuilder);
+        if ($response->isSucceeded()) {
+            echo 'Succeeded!';
+            return;
+        }
+
+// Failed
+        echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
     }
 }
