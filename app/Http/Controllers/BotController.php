@@ -36,7 +36,7 @@ class BotController extends Controller
         foreach ($sheets['feed']['entry'] as $db_entry) {
             $photo_url = $db_entry['gsx$photourl']['$t'] ?? "";
             $title     = $db_entry['gsx$title']['$t'] ?? "";
-            $url       = $db_entry['gsx$url']['$t'] ?? "https://www.google.com";
+            $url       = $db_entry['gsx$url']['$t'] ?? "https://www.youtube.com/watch?v=gPDfB6t7278&feature=youtu.be";
             $keyword   = $db_entry['gsx$keyword']['$t'] ?? "";
             array_push($datas_array, compact('photo_url', 'title', 'url', 'keyword'));
         }
