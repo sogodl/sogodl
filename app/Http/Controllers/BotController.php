@@ -46,6 +46,7 @@ class BotController extends Controller
         try {
             $events = $this->bot->parseEventRequest($request->getContent(), $signature);
             Log::info($events);
+            dd($events);
             Storage::prepend('message/bot'.today().'.csv', '"'.Carbon::now().'","'.$events[0]['event']['source']['userId'],'","',$events[0]['message']['text'].'"');
         } catch (InvalidEventRequestException $e) {
             return response('Invalid signature', 400);
