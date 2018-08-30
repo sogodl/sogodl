@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ReplyMsgService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -11,10 +12,6 @@ use LINE\LINEBot\Event\MessageEvent;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
-use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
-use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
-use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
-use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 
 class BotController extends Controller
 {
@@ -26,7 +23,12 @@ class BotController extends Controller
         $this->bot  = new \LINE\LINEBot($httpClient, ['channelSecret' => env('LINE_BOT_CHANNEL_SECRET')]);
     }
 
-    public function index(Request $request)
+    /**
+     * @param Request $request
+     * @param ReplyMsgService $replyMsgService
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function index(Request $request, ReplyMsgService $replyMsgService)
     {
         $signature = $request->header(HTTPHeader::LINE_SIGNATURE);
 
@@ -36,11 +38,12 @@ class BotController extends Controller
         $sheets      = json_decode(file_get_contents($url), true);
         $datas_array = [];
         foreach ($sheets['feed']['entry'] as $db_entry) {
+            $type      = $db_entry['gsx$type']['$t'] ?? "";
             $photo_url = $db_entry['gsx$photourl']['$t'] ?? "";
             $title     = $db_entry['gsx$title']['$t'] ?? "";
             $url       = $db_entry['gsx$url']['$t'] ?? "";
             $keyword   = $db_entry['gsx$keyword']['$t'] ?? "";
-            array_push($datas_array, compact('photo_url', 'title', 'url', 'keyword'));
+            array_push($datas_array, compact('type', 'photo_url', 'title', 'url', 'keyword'));
         }
 
         try {
@@ -63,18 +66,24 @@ class BotController extends Controller
                 continue;
             }
 
-            Storage::prepend('message/bot'.today().'.csv', '"'.Carbon::now().'","'.$event->getUserId().'","'.$event->getText().'"');
+            Storage::prepend('messages/bot_' . Carbon::now()->toDateString() . '.csv', '"' . Carbon::now() . '","' . $event->getUserId() . '","' . $event->getText() . '"');
 
             $sourceText = $event->getText();
-            $replyMsg   = new TextMessageBuilder("有什麼我可以幫你的嗎？");
 
             foreach ($datas_array as $data) {
                 foreach (explode(',', $data['keyword']) as $keyword) {
                     if (mb_strpos($sourceText, $keyword) !== false) {
-                        $action   = array(new UriTemplateActionBuilder('查看詳情', $data['url']));
-                        $button   = new ButtonTemplateBuilder($data['title'], $data['title'], $data['photo_url'], $action);
-                        $replyMsg = new TemplateMessageBuilder($data['title'], $button);
-                        break 2;
+                        switch ($data['type']) {
+                            case 'text':
+                                $replyMsg = $replyMsgService->TextMessage($data['title']);
+                                break;
+                            case 'template':
+                                $replyMsg = $replyMsgService->TemplateMessage($data['title'], $data['url'], $data['photo_url']);
+                                break 3;
+                            default:
+                                $replyMsg = $replyMsgService->TextMessage("有什麼我可以幫你的嗎？");
+                                break;
+                        }
                     }
                 }
             }
