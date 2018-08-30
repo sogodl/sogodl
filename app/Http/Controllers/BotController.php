@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Event\MessageEvent;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
@@ -36,7 +38,7 @@ class BotController extends Controller
         foreach ($sheets['feed']['entry'] as $db_entry) {
             $photo_url = $db_entry['gsx$photourl']['$t'] ?? "";
             $title     = $db_entry['gsx$title']['$t'] ?? "";
-            $url       = $db_entry['gsx$url']['$t'] ?? "https://www.youtube.com/watch?v=gPDfB6t7278&feature=youtu.be";
+            $url       = $db_entry['gsx$url']['$t'] ?? "";
             $keyword   = $db_entry['gsx$keyword']['$t'] ?? "";
             array_push($datas_array, compact('photo_url', 'title', 'url', 'keyword'));
         }
@@ -44,6 +46,7 @@ class BotController extends Controller
         try {
             $events = $this->bot->parseEventRequest($request->getContent(), $signature);
             Log::info($events);
+            Storage::prepend('message/bot'.today().'.csv', '"'.Carbon::now().'","'.$events[0]['event']['source']['userId'],'","',$events[0]['message']['text'].'"');
         } catch (InvalidEventRequestException $e) {
             return response('Invalid signature', 400);
         } catch (InvalidSignatureException $e) {
