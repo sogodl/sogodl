@@ -80,10 +80,12 @@ class BotController extends Controller
                             case 'template':
                                 $replyMsg = $replyMsgService->TemplateMessage($data['title'], $data['url'], $data['photo_url']);
                                 break 3;
-                            default:
-                                $replyMsg = $replyMsgService->TextMessage("有什麼我可以幫你的嗎？");
+                            case 'image':
+                                $replyMsg = $replyMsgService->ImageMessage($data['url'], $data['photo_url']);
                                 break;
                         }
+                    }else{
+                        $replyMsg = $replyMsgService->TextMessage("有什麼我可以幫你的嗎？");
                     }
                 }
             }
