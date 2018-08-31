@@ -13,6 +13,7 @@ use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
+use LINE\LINEBot\MessageBuilder\VideoMessageBuilder;
 use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 
 class ReplyMsgService
@@ -38,6 +39,12 @@ class ReplyMsgService
     public function ImageMessage(string $url, string $photo_url)
     {
         $replyMsg = new ImageMessageBuilder($url,$photo_url);
+        return $replyMsg;
+    }
+
+    public function VideoMessage($url, $video_url)
+    {
+        $replyMsg = new VideoMessageBuilder($url,$video_url);
         return $replyMsg;
     }
 }
