@@ -45,8 +45,8 @@ class BotController extends Controller
             $photo_url1  = $db_entry['gsx$photourl1']['$t'] ?? "";
             $title1      = $db_entry['gsx$title1']['$t'] ?? "";
             $url1        = $db_entry['gsx$url1']['$t'] ?? "";
-            $button_name = $db_entry['gsx$button_name']['$t'] ?? "";
-            $button_url  = $db_entry['gsx$button_url']['$t'] ?? "";
+            $button_name = $db_entry['gsx$buttonname']['$t'] ?? "";
+            $button_url  = $db_entry['gsx$buttonurl']['$t'] ?? "";
 
             $keyword = $db_entry['gsx$keyword']['$t'] ?? "";
             array_push($datas_array, compact('type', 'photo_url', 'title', 'url', 'keyword', 'photo_url1', 'title1', 'url1', 'button_name', 'button_url'));
