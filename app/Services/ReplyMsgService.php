@@ -50,9 +50,9 @@ class ReplyMsgService
 
     public function Template2ButtonMessage(string $title, string $url, string $photo_url, string $button_name, string $button_url)
     {
-        $action   = array(new UriTemplateActionBuilder('查看詳情', $url),
-                          new UriTemplateActionBuilder($button_name, $button_url));
-        $button   = new ButtonTemplateBuilder(mb_substr($title, 0, 39), mb_substr($title, 0, 39), $photo_url, $action);
+        $actions  = array(new UriTemplateActionBuilder('查看詳情', $url),
+                          new UriTemplateActionBuilder('查看詳情', $url));
+        $button   = new ButtonTemplateBuilder(mb_substr($title, 0, 39), mb_substr($title, 0, 39), $photo_url, $actions);
         $replyMsg = new TemplateMessageBuilder(mb_substr($title, 0, 39), $button);
         return $replyMsg;
     }
