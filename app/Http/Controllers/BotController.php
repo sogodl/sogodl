@@ -38,12 +38,18 @@ class BotController extends Controller
         $sheets      = json_decode(file_get_contents($url), true);
         $datas_array = [];
         foreach ($sheets['feed']['entry'] as $db_entry) {
-            $type      = $db_entry['gsx$type']['$t'] ?? "";
-            $photo_url = $db_entry['gsx$photourl']['$t'] ?? "";
-            $title     = $db_entry['gsx$title']['$t'] ?? "";
-            $url       = $db_entry['gsx$url']['$t'] ?? "";
-            $keyword   = $db_entry['gsx$keyword']['$t'] ?? "";
-            array_push($datas_array, compact('type', 'photo_url', 'title', 'url', 'keyword'));
+            $type        = $db_entry['gsx$type']['$t'] ?? "";
+            $photo_url   = $db_entry['gsx$photourl']['$t'] ?? "";
+            $title       = $db_entry['gsx$title']['$t'] ?? "";
+            $url         = $db_entry['gsx$url']['$t'] ?? "";
+            $photo_url1  = $db_entry['gsx$photourl1']['$t'] ?? "";
+            $title1      = $db_entry['gsx$title1']['$t'] ?? "";
+            $url1        = $db_entry['gsx$url1']['$t'] ?? "";
+            $button_name = $db_entry['gsx$button_name']['$t'] ?? "";
+            $button_url  = $db_entry['gsx$button_url']['$t'] ?? "";
+
+            $keyword = $db_entry['gsx$keyword']['$t'] ?? "";
+            array_push($datas_array, compact('type', 'photo_url', 'title', 'url', 'keyword', 'photo_url1', 'title1', 'url1', 'button_name', 'button_url'));
         }
 
         try {
@@ -80,6 +86,12 @@ class BotController extends Controller
                             case 'template':
                                 $replyMsg = $replyMsgService->TemplateMessage($data['title'], $data['url'], $data['photo_url']);
                                 break 3;
+                            case 'template-2button':
+                                $replyMsg = $replyMsgService->Template2ButtonMessage($data['title'], $data['url'], $data['photo_url'],$data['button_name'],$data['button_url']);
+                                break 3;
+                            case 'template-2carousel':
+                                $replyMsg = $replyMsgService->Template2CarouselMessage($data['title'], $data['url'], $data['photo_url'],$data['title1'], $data['url1'], $data['photo_url1']);
+                                break 3;
                             case 'image':
                                 $replyMsg = $replyMsgService->ImageMessage($data['url'], $data['photo_url']);
                                 break;
@@ -87,7 +99,7 @@ class BotController extends Controller
                                 $replyMsg = $replyMsgService->VideoMessage($data['url'], $data['photo_url']);
                                 break;
                         }
-                    }else{
+                    } else {
                         $replyMsg = $replyMsgService->TextMessage("有什麼我可以幫你的嗎？");
                     }
                 }

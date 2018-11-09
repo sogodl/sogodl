@@ -38,13 +38,36 @@ class ReplyMsgService
 
     public function ImageMessage(string $url, string $photo_url)
     {
-        $replyMsg = new ImageMessageBuilder($url,$photo_url);
+        $replyMsg = new ImageMessageBuilder($url, $photo_url);
         return $replyMsg;
     }
 
     public function VideoMessage($url, $video_url)
     {
-        $replyMsg = new VideoMessageBuilder($url,$video_url);
+        $replyMsg = new VideoMessageBuilder($url, $video_url);
+        return $replyMsg;
+    }
+
+    public function Template2ButtonMessage(string $title, string $url, string $photo_url, string $button, string $button_url)
+    {
+        $action   = array(new UriTemplateActionBuilder('查看詳情', $url), new UriTemplateActionBuilder($button, $button_url));
+        $button   = new ButtonTemplateBuilder(mb_substr($title, 0, 39), mb_substr($title, 0, 39), $photo_url, $action);
+        $replyMsg = new TemplateMessageBuilder(mb_substr($title, 0, 39), $button);
+        return $replyMsg;
+    }
+
+    public function Template2CarouselMessage(string $title, string $url, string $photo_url, string $title1, string $url1, string $photo_url1)
+    {
+        $action1   = array(new UriTemplateActionBuilder('查看詳情', $url));
+        $button1   = new ButtonTemplateBuilder(mb_substr($title, 0, 39), mb_substr($title, 0, 39), $photo_url, $action1);
+        $action2   = array(new UriTemplateActionBuilder('查看詳情', $url1));
+        $button2   = new ButtonTemplateBuilder(mb_substr($title1, 0, 39), mb_substr($title1, 0, 39), $photo_url1, $action2);
+
+        $column1 = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder("標題", "說明", $photo_url , $action1);
+        $column2 = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder("標題", "說明", $photo_url1, $action2);
+
+        $carousel = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder(compact('column1','column2'));
+        $replyMsg = new TemplateMessageBuilder(mb_substr($title, 0, 39), $carousel);
         return $replyMsg;
     }
 }
