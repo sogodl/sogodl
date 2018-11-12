@@ -82,7 +82,7 @@ class BotController extends Controller
                         switch ($data['type']) {
                             case 'text':
                                 $replyMsg = $replyMsgService->TextMessage($data['title']);
-                                break;
+                                break 3;
                             case 'template':
                                 $replyMsg = $replyMsgService->TemplateMessage($data['title'], $data['url'], $data['photo_url']);
                                 break 3;
