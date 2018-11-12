@@ -77,6 +77,8 @@ class BotController extends Controller
             $sourceText = $event->getText();
 
             foreach ($datas_array as $data) {
+                if ($data['keyword'] == null)
+                    $data['keyword'] = "沒有關鍵字";
                 foreach (explode(',', $data['keyword']) as $keyword) {
                     if (mb_strpos($sourceText, $keyword) !== false) {
                         switch ($data['type']) {
