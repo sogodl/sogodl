@@ -61,21 +61,24 @@ class ReplyMsgService
     public function Template2CarouselMessage(string $title, string $url, string $photo_url, string $title1, string $url1, string $photo_url1)
     {
         $action1 = array(new UriTemplateActionBuilder('查看詳情', $url));
-        $button1 = new ButtonTemplateBuilder(mb_substr($title, 0, 39), mb_substr($title, 0, 39), $photo_url, $action1);
+        $column1 = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder(mb_substr($title, 0, 39), mb_substr($title, 0, 39), $photo_url, $action1);
         $action2 = array(new UriTemplateActionBuilder('查看詳情', $url1));
-        $button2 = new ButtonTemplateBuilder(mb_substr($title1, 0, 39), mb_substr($title1, 0, 39), $photo_url1, $action2);
-
-        $column1 = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder("標題", "說明", $photo_url, $button1);
-        $column2 = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder("標題", "說明", $photo_url1, $button2);
+        $column2 = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder(mb_substr($title1, 0, 39), mb_substr($title1, 0, 39), $photo_url1, $action2);
 
         $carousel = new \LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder(compact('column1', 'column2'));
         $replyMsg = new TemplateMessageBuilder(mb_substr($title, 0, 39), $carousel);
         return $replyMsg;
     }
 
-    public function TemplateActionMessage($title, $url, $photo_url, $action_message)
+    public function TemplateActionMessage($title, $photo_url, $action_message)
     {
-        $actions  = array(new MessageTemplateActionBuilder($action_message, $action_message));
+        $actions       = array();
+        $message_array = explode('|', $action_message);
+        foreach ($message_array as $message) {
+            $action_array = explode('@', $message);
+            array_push($actions, new MessageTemplateActionBuilder($action_array[0], $action_array[1]));
+//            $actions = array(new MessageTemplateActionBuilder($action_message, $action_message));
+        }
         $button   = new ButtonTemplateBuilder(mb_substr($title, 0, 39), mb_substr($title, 0, 39), $photo_url, $actions);
         $replyMsg = new TemplateMessageBuilder(mb_substr($title, 0, 39), $button);
         return $replyMsg;

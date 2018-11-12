@@ -48,7 +48,7 @@ class BotController extends Controller
             $button_name    = $db_entry['gsx$buttonname']['$t'] ?? "";
             $button_url     = $db_entry['gsx$buttonurl']['$t'] ?? "";
             $action_message = $db_entry['gsx$actionmessage']['$t'] ?? "";
-            $keyword        = $db_entry['gsx$keyword']['$t'] ?? "";
+            $keyword        = $db_entry['gsx$keyword']['$t'] ?? "沒有關鍵字";
             array_push($datas_array, compact('type', 'photo_url', 'title', 'url', 'keyword', 'photo_url1', 'title1', 'url1', 'button_name', 'button_url', 'action_message'));
         }
 
@@ -77,7 +77,6 @@ class BotController extends Controller
             $sourceText = $event->getText();
 
             foreach ($datas_array as $data) {
-                Log::info($data['keyword']);
                 foreach (explode(',', $data['keyword']) as $keyword) {
                     if (mb_strpos($sourceText, $keyword) !== false) {
                         switch ($data['type']) {
@@ -94,7 +93,7 @@ class BotController extends Controller
                                 $replyMsg = $replyMsgService->Template2CarouselMessage($data['title'], $data['url'], $data['photo_url'], $data['title1'], $data['url1'], $data['photo_url1']);
                                 break 3;
                             case 'template-message':
-                                $replyMsg = $replyMsgService->TemplateActionMessage($data['title'], $data['url'], $data['photo_url'], $data['action_message']);
+                                $replyMsg = $replyMsgService->TemplateActionMessage($data['title'], $data['photo_url'], $data['action_message']);
                                 break 3;
                             case 'image':
                                 $replyMsg = $replyMsgService->ImageMessage($data['url'], $data['photo_url']);
