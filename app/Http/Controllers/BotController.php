@@ -38,18 +38,18 @@ class BotController extends Controller
         $sheets      = json_decode(file_get_contents($url), true);
         $datas_array = [];
         foreach ($sheets['feed']['entry'] as $db_entry) {
-            $type        = $db_entry['gsx$type']['$t'] ?? "";
-            $photo_url   = $db_entry['gsx$photourl']['$t'] ?? "";
-            $title       = $db_entry['gsx$title']['$t'] ?? "";
-            $url         = $db_entry['gsx$url']['$t'] ?? "";
-            $photo_url1  = $db_entry['gsx$photourl1']['$t'] ?? "";
-            $title1      = $db_entry['gsx$title1']['$t'] ?? "";
-            $url1        = $db_entry['gsx$url1']['$t'] ?? "";
-            $button_name = $db_entry['gsx$buttonname']['$t'] ?? "";
-            $button_url  = $db_entry['gsx$buttonurl']['$t'] ?? "";
-
-            $keyword = $db_entry['gsx$keyword']['$t'] ?? "";
-            array_push($datas_array, compact('type', 'photo_url', 'title', 'url', 'keyword', 'photo_url1', 'title1', 'url1', 'button_name', 'button_url'));
+            $type           = $db_entry['gsx$type']['$t'] ?? "";
+            $photo_url      = $db_entry['gsx$photourl']['$t'] ?? "";
+            $title          = $db_entry['gsx$title']['$t'] ?? "";
+            $url            = $db_entry['gsx$url']['$t'] ?? "";
+            $photo_url1     = $db_entry['gsx$photourl1']['$t'] ?? "";
+            $title1         = $db_entry['gsx$title1']['$t'] ?? "";
+            $url1           = $db_entry['gsx$url1']['$t'] ?? "";
+            $button_name    = $db_entry['gsx$buttonname']['$t'] ?? "";
+            $button_url     = $db_entry['gsx$buttonurl']['$t'] ?? "";
+            $action_message = $db_entry['gsx$actionmessage']['$t'] ?? "";
+            $keyword        = $db_entry['gsx$keyword']['$t'] ?? "";
+            array_push($datas_array, compact('type', 'photo_url', 'title', 'url', 'keyword', 'photo_url1', 'title1', 'url1', 'button_name', 'button_url', 'action_message'));
         }
 
         try {
@@ -78,6 +78,7 @@ class BotController extends Controller
 
             foreach ($datas_array as $data) {
                 foreach (explode(',', $data['keyword']) as $keyword) {
+                    Log::info(var_dump(explode(',', $data['keyword'])));
                     if (mb_strpos($sourceText, $keyword) !== false) {
                         switch ($data['type']) {
                             case 'text':
@@ -87,10 +88,13 @@ class BotController extends Controller
                                 $replyMsg = $replyMsgService->TemplateMessage($data['title'], $data['url'], $data['photo_url']);
                                 break 3;
                             case 'template-2button':
-                                $replyMsg = $replyMsgService->Template2ButtonMessage($data['title'], $data['url'], $data['photo_url'],$data['button_name'],$data['button_url']);
+                                $replyMsg = $replyMsgService->Template2ButtonMessage($data['title'], $data['url'], $data['photo_url'], $data['button_name'], $data['button_url']);
                                 break 3;
                             case 'template-2carousel':
-                                $replyMsg = $replyMsgService->Template2CarouselMessage($data['title'], $data['url'], $data['photo_url'],$data['title1'], $data['url1'], $data['photo_url1']);
+                                $replyMsg = $replyMsgService->Template2CarouselMessage($data['title'], $data['url'], $data['photo_url'], $data['title1'], $data['url1'], $data['photo_url1']);
+                                break 3;
+                            case 'template-message':
+                                $replyMsg = $replyMsgService->TemplateActionMessage($data['title'], $data['url'], $data['photo_url'], $data['action_message']);
                                 break 3;
                             case 'image':
                                 $replyMsg = $replyMsgService->ImageMessage($data['url'], $data['photo_url']);
