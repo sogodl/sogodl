@@ -97,10 +97,10 @@ class BotController extends Controller
                                 break 3;
                             case 'image':
                                 $replyMsg = $replyMsgService->ImageMessage($data['url'], $data['photo_url']);
-                                break;
+                                break 3;
                             case 'video':
                                 $replyMsg = $replyMsgService->VideoMessage($data['url'], $data['photo_url']);
-                                break;
+                                break 3;
                         }
                     } else {
                         $replyMsg = $replyMsgService->TextMessage("有什麼我可以幫你的嗎？");
