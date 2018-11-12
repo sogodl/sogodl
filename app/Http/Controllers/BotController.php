@@ -77,8 +77,8 @@ class BotController extends Controller
             $sourceText = $event->getText();
 
             foreach ($datas_array as $data) {
+                Log::info($data['keyword']);
                 foreach (explode(',', $data['keyword']) as $keyword) {
-                    Log::info(var_dump(explode(',', $data['keyword'])));
                     if (mb_strpos($sourceText, $keyword) !== false) {
                         switch ($data['type']) {
                             case 'text':
