@@ -18,3 +18,4 @@ use Illuminate\Http\Request;
 //});
 
 Route::post('bot','BotController@index');
+//Route::get('bot','BotController@google_client');

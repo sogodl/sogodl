@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\GoogleSheetService;
 use App\Services\ReplyMsgService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -26,29 +27,29 @@ class BotController extends Controller
     /**
      * @param Request $request
      * @param ReplyMsgService $replyMsgService
+     * @param GoogleSheetService $googleSheetService
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function index(Request $request, ReplyMsgService $replyMsgService)
+    public function index(Request $request, ReplyMsgService $replyMsgService,GoogleSheetService $googleSheetService)
     {
         $signature = $request->header(HTTPHeader::LINE_SIGNATURE);
 
         //get the db content
-        $url = 'https://spreadsheets.google.com/feeds/list/' . env('GOOGLE_SHEET_ID') . '/1/public/values?alt=json';
+        $contents = $googleSheetService->getGoogleSheet();
 
-        $sheets      = json_decode(file_get_contents($url), true);
         $datas_array = [];
-        foreach ($sheets['feed']['entry'] as $db_entry) {
-            $type           = $db_entry['gsx$type']['$t'] ?? "";
-            $photo_url      = $db_entry['gsx$photourl']['$t'] ?? "";
-            $title          = $db_entry['gsx$title']['$t'] ?? "";
-            $url            = $db_entry['gsx$url']['$t'] ?? "";
-            $photo_url1     = $db_entry['gsx$photourl1']['$t'] ?? "";
-            $title1         = $db_entry['gsx$title1']['$t'] ?? "";
-            $url1           = $db_entry['gsx$url1']['$t'] ?? "";
-            $button_name    = $db_entry['gsx$buttonname']['$t'] ?? "";
-            $button_url     = $db_entry['gsx$buttonurl']['$t'] ?? "";
-            $action_message = $db_entry['gsx$actionmessage']['$t'] ?? "";
-            $keyword        = $db_entry['gsx$keyword']['$t'] ?? "沒有關鍵字";
+        foreach ($contents as $db_entry) {
+            $type           = $db_entry[0] ?? "";
+            $photo_url      = $db_entry[1] ?? "";
+            $title          = $db_entry[2] ?? "";
+            $url            = $db_entry[3] ?? "";
+            $photo_url1     = $db_entry[4] ?? "";
+            $title1         = $db_entry[5] ?? "";
+            $url1           = $db_entry[6] ?? "";
+            $button_name    = $db_entry[7] ?? "";
+            $button_url     = $db_entry[8] ?? "";
+            $action_message = $db_entry[9] ?? "";
+            $keyword        = $db_entry[10] ?? "沒有關鍵字";
             array_push($datas_array, compact('type', 'photo_url', 'title', 'url', 'keyword', 'photo_url1', 'title1', 'url1', 'button_name', 'button_url', 'action_message'));
         }
 
