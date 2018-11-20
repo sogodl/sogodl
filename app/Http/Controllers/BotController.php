@@ -36,12 +36,14 @@ class BotController extends Controller
         $signature = $request->header(HTTPHeader::LINE_SIGNATURE);
 
         //get the db content
-        if (Cache::has('content')) {
+        /*if (Cache::has('content')) {
             $contents = Cache::get('content');
         } else {
             $contents = $googleSheetService->getGoogleSheet();
             Cache::put('content', $contents, '30');
-        }
+        }*/
+
+        $contents = $googleSheetService->getGoogleSheet();
 
         $datas_array = [];
         foreach ($contents as $db_entry) {
