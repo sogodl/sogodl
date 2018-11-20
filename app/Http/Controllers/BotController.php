@@ -6,6 +6,7 @@ use App\Services\GoogleSheetService;
 use App\Services\ReplyMsgService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use LINE\LINEBot\Constant\HTTPHeader;
@@ -30,12 +31,17 @@ class BotController extends Controller
      * @param GoogleSheetService $googleSheetService
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function index(Request $request, ReplyMsgService $replyMsgService,GoogleSheetService $googleSheetService)
+    public function index(Request $request, ReplyMsgService $replyMsgService, GoogleSheetService $googleSheetService)
     {
         $signature = $request->header(HTTPHeader::LINE_SIGNATURE);
 
         //get the db content
-        $contents = $googleSheetService->getGoogleSheet();
+        if (Cache::has('content')) {
+            $contents = Cache::get('content');
+        } else {
+            $contents = $googleSheetService->getGoogleSheet();
+            Cache::put('content', $contents, '30');
+        }
 
         $datas_array = [];
         foreach ($contents as $db_entry) {
