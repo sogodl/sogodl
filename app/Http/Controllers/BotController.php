@@ -114,7 +114,7 @@ class BotController extends Controller
                                 break 3;
                         }
                     } else {
-                        $replyMsg = $replyMsgService->TextMessage("有什麼我可以幫你的嗎？");
+                        $replyMsg = $replyMsgService->TextMessage("我不太了解你的意思，或者能夠請您到 https://newtaipei.run 找找看？");
                     }
                 }
             }
